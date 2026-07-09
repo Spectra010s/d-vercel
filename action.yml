@@ -1,4 +1,4 @@
-name: D-vercel
+name: Deploy to Vercel
 description: Seamlessly deploy frontend and full-stack applications to Vercel from GitHub Actions.
 author: "Spectra010s"
 
