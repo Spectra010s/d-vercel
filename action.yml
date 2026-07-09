@@ -40,6 +40,11 @@ inputs:
     description: "If true, fail the action when deploy fails"
     required: false
     default: "true"
+  ignore-build-step:
+    description: "Command or script to execute to determine if the build/deployment should be ignored. Exiting with 0 ignores/skips the build."
+    required: false
+    default: ""
+
 
 outputs:
   deployment-url:
