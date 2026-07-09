@@ -34082,9 +34082,33 @@ function getOctokit(token, options, ...additionalPlugins) {
     return new GitHubWithPlugins(getOctokitOptions(token));
 }
 
-function asBool(value) {
-    return value.toLowerCase() === "true";
+async function shouldIgnoreBuild(ignoreCommand, cwd) {
+    if (!ignoreCommand)
+        return false;
+    info(`Running ignore command: ${ignoreCommand}`);
+    let shell = "bash";
+    let shellArgs = ["-c", ignoreCommand];
+    if (process.platform === "win32") {
+        shell = "powershell";
+        shellArgs = ["-Command", ignoreCommand];
+    }
+    try {
+        const exitCode = await exec(shell, shellArgs, {
+            cwd,
+            ignoreReturnCode: true,
+        });
+        if (exitCode === 0) {
+            info("Build ignored based on ignore command (exited with 0).");
+            return true;
+        }
+        info(`Ignore command exited with ${exitCode}. Proceeding with build.`);
+    }
+    catch (err) {
+        warning(`Ignore command failed to execute: ${String(err)}. Proceeding with build.`);
+    }
+    return false;
 }
+
 function shortSha(sha) {
     return sha ? sha.slice(0, 7) : "unknown";
 }
@@ -34095,14 +34119,6 @@ function escapeHtml(value) {
         .replace(/>/g, "&gt;")
         .replace(/"/g, "&quot;")
         .replace(/'/g, "&#39;");
-}
-function getVercelBin(version) {
-    const value = version.trim() || "latest";
-    return value.startsWith("vercel@") ? value : `vercel@${value}`;
-}
-function extractDeploymentUrl(output) {
-    const matches = output.match(/https:\/\/[^\s'"]+\.vercel\.app/g);
-    return matches?.at(-1) ?? "";
 }
 function makeCommentBody({ marker, title, repoName, status, commitSha, deploymentUrl, runUrl, }) {
     const safeRepoName = escapeHtml(repoName);
@@ -34153,6 +34169,18 @@ async function upsertPrComment({ token, owner, repo, issueNumber, marker, body, 
         body,
     });
 }
+
+function asBool(value) {
+    return value.toLowerCase() === "true";
+}
+function getVercelBin(version) {
+    const value = version.trim() || "latest";
+    return value.startsWith("vercel@") ? value : `vercel@${value}`;
+}
+function extractDeploymentUrl(output) {
+    const matches = output.match(/https:\/\/[^\s'"]+\.vercel\.app/g);
+    return matches?.at(-1) ?? "";
+}
 async function run() {
     const vercelToken = getInput("vercel-token", { required: true });
     const vercelOrgId = getInput("vercel-org-id", { required: true });
@@ -34164,6 +34192,7 @@ async function run() {
     const marker = getInput("marker") || "<!-- vercel-sticky-comment -->";
     const commentTitle = getInput("comment-title") || "Vercel Deployment";
     const failOnError = asBool(getInput("fail-on-error"));
+    const ignoreBuildStep = getInput("ignore-build-step");
     const environment = production ? "production" : "preview";
     const context$1 = context;
     const repoName = context$1.repo.repo;
@@ -34175,6 +34204,16 @@ async function run() {
     info(`Deploy environment: ${environment}`);
     info(`Working directory: ${cwd}`);
     info(`Vercel CLI: ${vercelBin}`);
+    // Run the ignore build step command if provided
+    if (ignoreBuildStep) {
+        const isIgnored = await shouldIgnoreBuild(ignoreBuildStep, cwd);
+        if (isIgnored) {
+            info("Skipping deployment as per ignore-build-step results.");
+            setOutput("status", "ignored");
+            setOutput("deployment-url", "");
+            return;
+        }
+    }
     await exec("npx", ["-y", vercelBin, "pull", "--yes", `--environment=${environment}`, `--token=${vercelToken}`], { cwd });
     let combinedOutput = "";
     let exitCode = 0;
