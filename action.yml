@@ -1,0 +1,56 @@
+name: D-vercel
+description: Seamlessly deploy frontend and full-stack applications to Vercel from GitHub Actions.
+author: "Spectra010s"
+
+inputs:
+  vercel-token:
+    description: "Vercel token"
+    required: true
+  vercel-org-id:
+    description: "Vercel org/team ID"
+    required: true
+  vercel-project-id:
+    description: "Vercel project ID"
+    required: true
+  github-token:
+    description: "GitHub token used to create or update PR comments"
+    required: false
+    default: ""
+  vercel-version:
+    description: "Vercel CLI version to run. Defaults to latest."
+    required: false
+    default: "latest"
+  production:
+    description: "Deploy as production (true/false). false = preview"
+    required: false
+    default: "false"
+  working-directory:
+    description: "Directory to run Vercel commands from"
+    required: false
+    default: "."
+  marker:
+    description: "Hidden marker used to find and update the same PR comment"
+    required: false
+    default: "<!-- vercel-sticky-comment -->"
+  comment-title:
+    description: "PR comment title"
+    required: false
+    default: "Vercel Deployment"
+  fail-on-error:
+    description: "If true, fail the action when deploy fails"
+    required: false
+    default: "true"
+
+outputs:
+  deployment-url:
+    description: "Detected Vercel deployment URL"
+  status:
+    description: "Deployment status: success or failure"
+
+runs:
+  using: "node24"
+  main: "dist/index.js"
+
+branding:
+  icon: "upload-cloud"
+  color: "black"
