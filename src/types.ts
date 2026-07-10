@@ -15,4 +15,5 @@ export type UpsertPrCommentInput = {
   issueNumber: number;
   marker: string;
   body: string;
+  sticky: boolean;
 };

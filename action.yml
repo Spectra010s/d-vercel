@@ -28,10 +28,10 @@ inputs:
     description: "Directory to run Vercel commands from"
     required: false
     default: "."
-  marker:
-    description: "Hidden marker used to find and update the same PR comment"
+  sticky-comment:
+    description: "Whether to update a single sticky comment on the PR, or post a new one on each change"
     required: false
-    default: "<!-- vercel-sticky-comment -->"
+    default: "true"
   comment-title:
     description: "PR comment title"
     required: false

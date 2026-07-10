@@ -43,7 +43,9 @@ export function makeCommentBody({
     `<tr><td><strong>Commit:</strong></td><td><code>${safeCommit}</code></td></tr>`,
     `<tr><td><strong>Workflow:</strong></td><td><a href="${safeRunUrl}">View run</a></td></tr>`,
     "</table>",
-  ].join("\n");
+  ]
+    .filter(Boolean)
+    .join("\n");
 }
 
 export async function upsertPrComment({
@@ -53,28 +55,32 @@ export async function upsertPrComment({
   issueNumber,
   marker,
   body,
+  sticky,
 }: UpsertPrCommentInput): Promise<void> {
   if (!token || !issueNumber) return;
 
   const octokit = github.getOctokit(token);
-  const comments = await octokit.paginate(octokit.rest.issues.listComments, {
-    owner,
-    repo,
-    issue_number: issueNumber,
-    per_page: 100,
-  });
 
-  const existing = comments.find(
-    (comment: { body?: string; id: number }) => comment.body?.includes(marker),
-  );
-  if (existing) {
-    await octokit.rest.issues.updateComment({
+  if (sticky) {
+    const comments = await octokit.paginate(octokit.rest.issues.listComments, {
       owner,
       repo,
-      comment_id: existing.id,
-      body,
+      issue_number: issueNumber,
+      per_page: 100,
     });
-    return;
+
+    const existing = comments.find(
+      (comment: { body?: string; id: number }) => comment.body?.includes(marker),
+    );
+    if (existing) {
+      await octokit.rest.issues.updateComment({
+        owner,
+        repo,
+        comment_id: existing.id,
+        body,
+      });
+      return;
+    }
   }
 
   await octokit.rest.issues.createComment({
