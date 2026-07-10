@@ -24,6 +24,10 @@ inputs:
     description: "Deploy as production (true/false). false = preview"
     required: false
     default: "false"
+  prebuilt:
+    description: "Deploy prebuilt assets (true/false). If true, skips 'pull' and deploys using '--prebuilt'."
+    required: false
+    default: "false"
   working-directory:
     description: "Directory to run Vercel commands from"
     required: false

@@ -26,6 +26,7 @@ async function run(): Promise<void> {
   const githubToken = core.getInput("github-token");
   const vercelBin = getVercelBin(core.getInput("vercel-version"));
   const production = asBool(core.getInput("production"));
+  const prebuilt = asBool(core.getInput("prebuilt"));
   const workingDirectory = core.getInput("working-directory") || ".";
   const stickyComment = asBool(core.getInput("sticky-comment") || "true");
   const commentTitle = core.getInput("comment-title") || "Vercel Deployment";
@@ -57,16 +58,19 @@ async function run(): Promise<void> {
     }
   }
 
-  await exec.exec(
-    "npx",
-    ["-y", vercelBin, "pull", "--yes", `--environment=${environment}`, `--token=${vercelToken}`],
-    { cwd },
-  );
+  if (!prebuilt) {
+    await exec.exec(
+      "npx",
+      ["-y", vercelBin, "pull", "--yes", `--environment=${environment}`, `--token=${vercelToken}`],
+      { cwd },
+    );
+  }
 
   let combinedOutput = "";
   let exitCode = 0;
   const deployArgs = ["-y", vercelBin, "deploy", "--yes", `--token=${vercelToken}`];
   if (production) deployArgs.splice(3, 0, "--prod");
+  if (prebuilt) deployArgs.push("--prebuilt");
 
   try {
     exitCode = await exec.exec("npx", deployArgs, {
