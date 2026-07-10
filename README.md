@@ -82,7 +82,7 @@ jobs:
 | `ignore-build-step` | No | `""` | Command/script to determine if the build should be skipped. Exiting with `0` cancels the build. |
 | `vercel-version` | No | `"latest"` | The specific Vercel CLI package/version to run (e.g. `latest` or `vercel@32.0.0`). |
 | `comment-title` | No | `"Vercel Deployment"` | Header title for the generated Pull Request comment. |
-| `marker` | No | `<!-- vercel-sticky-comment -->` | Hidden HTML comment tag used to identify and update the sticky PR comment. |
+| `sticky-comment` | No | `"true"` | If `"true"`, updates a single "sticky" comment on the PR. If `"false"`, posts a new comment on each change. |
 | `fail-on-error` | No | `"true"` | If set to `"true"`, fails the GitHub Action if the Vercel deployment command fails. |
 
 ---
