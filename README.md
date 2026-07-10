@@ -137,6 +137,12 @@ ignore-build-step: "npx turbo-ignore"
 
 ---
 
+## Contributing
+
+Please read [CONTRIBUTING.md](./CONTRIBUTING.md) for local development setup, formatting, and pull request guidelines.
+
+---
+
 ## Author
 
 Created and maintained by [Spectra010s](https://spectra010s.biuld.app).

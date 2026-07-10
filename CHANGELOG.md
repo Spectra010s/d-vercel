@@ -9,10 +9,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
+- `git-aic` added to `devDependencies` to assist with generating conventional commit messages ([#10](https://github.com/Spectra010s/d-vercel/pull/10))
 - `prebuilt` input option — deploy prebuilt assets using `--prebuilt`, skipping `vercel pull` ([#4](https://github.com/Spectra010s/d-vercel/pull/6))
 - `sticky-comment` input option — choose between updating a single sticky PR comment or posting a new one on each change ([#3](https://github.com/Spectra010s/d-vercel/pull/5))
-- `CONTRIBUTING.md` — developer onboarding guide
-- `prettier` added to `devDependencies` for consistent formatting on fresh checkouts
+- [CONTRIBUTING.md](./CONTRIBUTING.md) — developer onboarding guide ([#8](https://github.com/Spectra010s/d-vercel/pull/8))
+- `prettier` added to `devDependencies` for consistent formatting on fresh checkouts ([#8](https://github.com/Spectra010s/d-vercel/pull/8))
 
 ### Removed
 
