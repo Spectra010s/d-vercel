@@ -22,7 +22,9 @@ function extractDeploymentUrl(output: string): string {
 async function run(): Promise<void> {
   const vercelToken = core.getInput("vercel-token", { required: true });
   const vercelOrgId = core.getInput("vercel-org-id", { required: true });
-  const vercelProjectId = core.getInput("vercel-project-id", { required: true });
+  const vercelProjectId = core.getInput("vercel-project-id", {
+    required: true,
+  });
   const githubToken = core.getInput("github-token");
   const vercelBin = getVercelBin(core.getInput("vercel-version"));
   const production = asBool(core.getInput("production"));
@@ -61,14 +63,27 @@ async function run(): Promise<void> {
   if (!prebuilt) {
     await exec.exec(
       "npx",
-      ["-y", vercelBin, "pull", "--yes", `--environment=${environment}`, `--token=${vercelToken}`],
+      [
+        "-y",
+        vercelBin,
+        "pull",
+        "--yes",
+        `--environment=${environment}`,
+        `--token=${vercelToken}`,
+      ],
       { cwd },
     );
   }
 
   let combinedOutput = "";
   let exitCode = 0;
-  const deployArgs = ["-y", vercelBin, "deploy", "--yes", `--token=${vercelToken}`];
+  const deployArgs = [
+    "-y",
+    vercelBin,
+    "deploy",
+    "--yes",
+    `--token=${vercelToken}`,
+  ];
   if (production) deployArgs.splice(3, 0, "--prod");
   if (prebuilt) deployArgs.push("--prebuilt");
 
@@ -127,7 +142,9 @@ async function run(): Promise<void> {
       core.setFailed("Vercel deployment failed.");
       return;
     }
-    core.warning("Vercel deployment failed, but fail-on-error=false so action will continue.");
+    core.warning(
+      "Vercel deployment failed, but fail-on-error=false so action will continue.",
+    );
   }
 }
 
