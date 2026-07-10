@@ -25,6 +25,15 @@ Thank you for contributing to `d-vercel`! Here is how to get started:
    npm run format
    ```
 
+## Committing Changes
+
+This repository uses [git-aic](https://gitaic.pages.dev) to generate AI-assisted conventional commit messages.
+
+After staging your files, run the following command to commit:
+```bash
+npm run commit
+```
+
 ## Pull Requests
 
 Ensure that the compiled `dist/index.js` is updated and committed alongside your source files so the GitHub Action runner can execute your latest changes.
