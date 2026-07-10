@@ -49,7 +49,6 @@ inputs:
     required: false
     default: ""
 
-
 outputs:
   deployment-url:
     description: "Detected Vercel deployment URL"

@@ -34140,27 +34140,31 @@ function makeCommentBody({ marker, title, repoName, status, commitSha, deploymen
         `<tr><td><strong>Commit:</strong></td><td><code>${safeCommit}</code></td></tr>`,
         `<tr><td><strong>Workflow:</strong></td><td><a href="${safeRunUrl}">View run</a></td></tr>`,
         "</table>",
-    ].join("\n");
+    ]
+        .filter(Boolean)
+        .join("\n");
 }
-async function upsertPrComment({ token, owner, repo, issueNumber, marker, body, }) {
+async function upsertPrComment({ token, owner, repo, issueNumber, marker, body, sticky, }) {
     if (!token || !issueNumber)
         return;
     const octokit = getOctokit(token);
-    const comments = await octokit.paginate(octokit.rest.issues.listComments, {
-        owner,
-        repo,
-        issue_number: issueNumber,
-        per_page: 100,
-    });
-    const existing = comments.find((comment) => comment.body?.includes(marker));
-    if (existing) {
-        await octokit.rest.issues.updateComment({
+    if (sticky) {
+        const comments = await octokit.paginate(octokit.rest.issues.listComments, {
             owner,
             repo,
-            comment_id: existing.id,
-            body,
+            issue_number: issueNumber,
+            per_page: 100,
         });
-        return;
+        const existing = comments.find((comment) => comment.body?.includes(marker));
+        if (existing) {
+            await octokit.rest.issues.updateComment({
+                owner,
+                repo,
+                comment_id: existing.id,
+                body,
+            });
+            return;
+        }
     }
     await octokit.rest.issues.createComment({
         owner,
@@ -34184,12 +34188,15 @@ function extractDeploymentUrl(output) {
 async function run() {
     const vercelToken = getInput("vercel-token", { required: true });
     const vercelOrgId = getInput("vercel-org-id", { required: true });
-    const vercelProjectId = getInput("vercel-project-id", { required: true });
+    const vercelProjectId = getInput("vercel-project-id", {
+        required: true,
+    });
     const githubToken = getInput("github-token");
     const vercelBin = getVercelBin(getInput("vercel-version"));
     const production = asBool(getInput("production"));
+    const prebuilt = asBool(getInput("prebuilt"));
     const workingDirectory = getInput("working-directory") || ".";
-    const marker = getInput("marker") || "<!-- vercel-sticky-comment -->";
+    const stickyComment = asBool(getInput("sticky-comment") || "true");
     const commentTitle = getInput("comment-title") || "Vercel Deployment";
     const failOnError = asBool(getInput("fail-on-error"));
     const ignoreBuildStep = getInput("ignore-build-step");
@@ -34214,12 +34221,29 @@ async function run() {
             return;
         }
     }
-    await exec("npx", ["-y", vercelBin, "pull", "--yes", `--environment=${environment}`, `--token=${vercelToken}`], { cwd });
+    if (!prebuilt) {
+        await exec("npx", [
+            "-y",
+            vercelBin,
+            "pull",
+            "--yes",
+            `--environment=${environment}`,
+            `--token=${vercelToken}`,
+        ], { cwd });
+    }
     let combinedOutput = "";
     let exitCode = 0;
-    const deployArgs = ["-y", vercelBin, "deploy", "--yes", `--token=${vercelToken}`];
+    const deployArgs = [
+        "-y",
+        vercelBin,
+        "deploy",
+        "--yes",
+        `--token=${vercelToken}`,
+    ];
     if (production)
         deployArgs.splice(3, 0, "--prod");
+    if (prebuilt)
+        deployArgs.push("--prebuilt");
     try {
         exitCode = await exec("npx", deployArgs, {
             cwd,
@@ -34246,8 +34270,9 @@ async function run() {
         const issueNumber = context$1.payload.pull_request.number;
         const commitSha = context$1.payload.pull_request.head.sha;
         const statusLabel = status === "success" ? "Ready" : "Failed";
+        const marker = "<!-- vercel-sticky-comment -->";
         const commentBody = makeCommentBody({
-            marker,
+            marker: stickyComment ? marker : "",
             title: commentTitle,
             repoName,
             status: statusLabel,
@@ -34262,6 +34287,7 @@ async function run() {
             issueNumber,
             marker,
             body: commentBody,
+            sticky: stickyComment,
         });
     }
     if (status === "failure") {

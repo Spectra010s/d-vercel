@@ -69,8 +69,8 @@ export async function upsertPrComment({
       per_page: 100,
     });
 
-    const existing = comments.find(
-      (comment: { body?: string; id: number }) => comment.body?.includes(marker),
+    const existing = comments.find((comment: { body?: string; id: number }) =>
+      comment.body?.includes(marker),
     );
     if (existing) {
       await octokit.rest.issues.updateComment({

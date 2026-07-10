@@ -26,7 +26,9 @@ export async function shouldIgnoreBuild(
     }
     core.info(`Ignore command exited with ${exitCode}. Proceeding with build.`);
   } catch (err) {
-    core.warning(`Ignore command failed to execute: ${String(err)}. Proceeding with build.`);
+    core.warning(
+      `Ignore command failed to execute: ${String(err)}. Proceeding with build.`,
+    );
   }
 
   return false;
