@@ -78,6 +78,7 @@ jobs:
 | `vercel-project-id` | **Yes** | N/A | Vercel Project ID. |
 | `github-token` | No | `""` | The `${{ secrets.GITHUB_TOKEN }}`. Required if you want sticky PR deployment comments. |
 | `production` | No | `"false"` | Whether to deploy as production (`true` / `false`). If `false`, deploys as a preview. |
+| `prebuilt` | No | `"false"` | Whether to deploy prebuilt assets (`true` / `false`). If `true`, skips `vercel pull` and deploys using `--prebuilt`. |
 | `working-directory` | No | `"."` | Subdirectory to run Vercel commands from. Excellent for monorepos. |
 | `ignore-build-step` | No | `""` | Command/script to determine if the build should be skipped. Exiting with `0` cancels the build. |
 | `vercel-version` | No | `"latest"` | The specific Vercel CLI package/version to run (e.g. `latest` or `vercel@32.0.0`). |
