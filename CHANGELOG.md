@@ -10,10 +10,16 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Added
 
 - `git-aic` added to `devDependencies` to assist with generating conventional commit messages ([#10](https://github.com/Spectra010s/d-vercel/pull/10))
+
+## [1.2.0] - 2026-07-10
+
+### Added
+
 - `prebuilt` input option — deploy prebuilt assets using `--prebuilt`, skipping `vercel pull` ([#4](https://github.com/Spectra010s/d-vercel/pull/6))
 - `sticky-comment` input option — choose between updating a single sticky PR comment or posting a new one on each change ([#3](https://github.com/Spectra010s/d-vercel/pull/5))
 - [CONTRIBUTING.md](./CONTRIBUTING.md) — developer onboarding guide ([#8](https://github.com/Spectra010s/d-vercel/pull/8))
 - `prettier` added to `devDependencies` for consistent formatting on fresh checkouts ([#8](https://github.com/Spectra010s/d-vercel/pull/8))
+- Linked contributing guide in README and updated compiled dist ([#11](https://github.com/Spectra010s/d-vercel/pull/11))
 
 ### Removed
 
@@ -37,6 +43,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Add/update deployment comments on pull requests
 - Customizable deployment options
 
-[Unreleased]: https://github.com/Spectra010s/d-vercel/compare/v1.1.0...HEAD
+[Unreleased]: https://github.com/Spectra010s/d-vercel/compare/v1.2.0...HEAD
+[1.2.0]: https://github.com/Spectra010s/d-vercel/compare/v1.1.0...v1.2.0
 [1.1.0]: https://github.com/Spectra010s/d-vercel/compare/v1.0.0...v1.1.0
 [1.0.0]: https://github.com/Spectra010s/d-vercel/releases/tag/v1.0.0
