@@ -27,7 +27,7 @@ Thank you for contributing to `d-vercel`! Here is how to get started:
 
 ## Committing Changes
 
-This repository uses [git-aic](https://gitaic.pages.dev) to generate AI-assisted conventional commit messages.
+This repository uses [git-aic](https://github.com/Spectra010s/git-aic) — an AI-assisted conventional commit message generator — for commits. See the [docs](https://git-aic.pages.dev) for setup and usage.
 
 After staging your files, run the following command to commit:
 ```bash
