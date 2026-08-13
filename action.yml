@@ -40,6 +40,10 @@ inputs:
     description: "PR comment title"
     required: false
     default: "Vercel Deployment"
+  comment-marker:
+    description: "Unique marker for the sticky PR comment. Set a distinct value per job to keep separate comments."
+    required: false
+    default: "vercel-sticky-comment"
   fail-on-error:
     description: "If true, fail the action when deploy fails"
     required: false

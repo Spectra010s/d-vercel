@@ -83,6 +83,7 @@ jobs:
 | `ignore-build-step` | No       | `""`                  | Command/script to determine if the build should be skipped. Exiting with `0` cancels the build.                      |
 | `vercel-version`    | No       | `"latest"`            | The specific Vercel CLI package/version to run (e.g. `latest` or `vercel@32.0.0`).                                   |
 | `comment-title`     | No       | `"Vercel Deployment"` | Header title for the generated Pull Request comment.                                                                 |
+| `comment-marker`    | No       | `"vercel-sticky-comment"` | Unique marker for the sticky PR comment. Set a distinct value per job to keep separate comments (see [Monorepo](#monorepo-multiple-apps-one-workflow)). |
 | `sticky-comment`    | No       | `"true"`              | If `"true"`, updates a single "sticky" comment on the PR. If `"false"`, posts a new comment on each change.          |
 | `fail-on-error`     | No       | `"true"`              | If set to `"true"`, fails the GitHub Action if the Vercel deployment command fails.                                  |
 
@@ -105,7 +106,50 @@ If your frontend application lives in a subdirectory (e.g., `apps/web` inside a 
     working-directory: apps/web # <--- Deploys only the web package
 ```
 
-### 2. Custom Ignored Build Steps (`ignore-build-step`)
+### 2. Monorepo: Multiple Apps, One Workflow (`comment-marker`)
+
+When one workflow deploys several apps (e.g. `web` and `admin` in a Turborepo/pnpm workspace), each job calls `d-vercel` with its own Vercel credentials and `working-directory`. By default all jobs share the **same** sticky comment marker, so they all update a **single** comment — the last job to finish overwrites the others.
+
+Give every job its **own `comment-marker`** so each app gets its own sticky comment, updated independently on subsequent commits:
+
+```yaml
+jobs:
+  deploy-web:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v6
+      - uses: actions/setup-node@v6
+        with: { node-version: 24 }
+      - uses: Spectra010s/d-vercel@v1
+        with:
+          vercel-token: ${{ secrets.WEB_VERCEL_TOKEN }}
+          vercel-org-id: ${{ secrets.WEB_VERCEL_ORG_ID }}
+          vercel-project-id: ${{ secrets.WEB_VERCEL_PROJECT_ID }}
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          working-directory: apps/web
+          comment-title: "Vercel Deployment — Web"
+          comment-marker: "vercel-sticky-comment-web"
+
+  deploy-admin:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v6
+      - uses: actions/setup-node@v6
+        with: { node-version: 24 }
+      - uses: Spectra010s/d-vercel@v1
+        with:
+          vercel-token: ${{ secrets.ADMIN_VERCEL_TOKEN }}
+          vercel-org-id: ${{ secrets.ADMIN_VERCEL_ORG_ID }}
+          vercel-project-id: ${{ secrets.ADMIN_VERCEL_PROJECT_ID }}
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          working-directory: apps/admin
+          comment-title: "Vercel Deployment — Admin"
+          comment-marker: "vercel-sticky-comment-admin"
+```
+
+> **Note:** `comment-title` alone is **not** enough to separate comments — the action locates a sticky comment by its marker, not its title. `comment-marker` is what keeps each app's comment independent.
+
+### 3. Custom Ignored Build Steps (`ignore-build-step`)
 
 To avoid building when unrelated files (e.g., backend API code, documentation, or configuration files) are modified, supply an `ignore-build-step` command.
 

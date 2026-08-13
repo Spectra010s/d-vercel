@@ -10,6 +10,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Added
 
 - `git-aic` added to `devDependencies` to assist with generating conventional commit messages ([#10](https://github.com/Spectra010s/d-vercel/pull/10))
+- `comment-marker` input - set a distinct sticky comment marker per job so monorepo workflows (multiple apps per PR) keep separate deployment comments ([#12](https://github.com/Spectra010s/d-vercel/issues/12))
 
 ## [1.2.0] - 2026-07-10
 
