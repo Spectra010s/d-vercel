@@ -32,6 +32,8 @@ async function run(): Promise<void> {
   const workingDirectory = core.getInput("working-directory") || ".";
   const stickyComment = asBool(core.getInput("sticky-comment") || "true");
   const commentTitle = core.getInput("comment-title") || "Vercel Deployment";
+  const commentMarker =
+    core.getInput("comment-marker") || "vercel-sticky-comment";
   const failOnError = asBool(core.getInput("fail-on-error"));
   const ignoreBuildStep = core.getInput("ignore-build-step");
 
@@ -115,7 +117,7 @@ async function run(): Promise<void> {
     const issueNumber = context.payload.pull_request.number;
     const commitSha = context.payload.pull_request.head.sha;
     const statusLabel = status === "success" ? "Ready" : "Failed";
-    const marker = "<!-- vercel-sticky-comment -->";
+    const marker = `<!-- ${commentMarker} -->`;
     const commentBody = makeCommentBody({
       marker: stickyComment ? marker : "",
       title: commentTitle,

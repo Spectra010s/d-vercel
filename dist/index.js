@@ -34198,6 +34198,7 @@ async function run() {
     const workingDirectory = getInput("working-directory") || ".";
     const stickyComment = asBool(getInput("sticky-comment") || "true");
     const commentTitle = getInput("comment-title") || "Vercel Deployment";
+    const commentMarker = getInput("comment-marker") || "vercel-sticky-comment";
     const failOnError = asBool(getInput("fail-on-error"));
     const ignoreBuildStep = getInput("ignore-build-step");
     const environment = production ? "production" : "preview";
@@ -34270,7 +34271,7 @@ async function run() {
         const issueNumber = context$1.payload.pull_request.number;
         const commitSha = context$1.payload.pull_request.head.sha;
         const statusLabel = status === "success" ? "Ready" : "Failed";
-        const marker = "<!-- vercel-sticky-comment -->";
+        const marker = `<!-- ${commentMarker} -->`;
         const commentBody = makeCommentBody({
             marker: stickyComment ? marker : "",
             title: commentTitle,
